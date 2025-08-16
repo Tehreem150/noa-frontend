@@ -23,8 +23,9 @@ export default function HealthcareTranslator() {
     }
     try {
       setBusy(true);
+      // ✅ Use deployed Vercel backend URL
       const res = await axios.post(
-         `${process.env.REACT_APP_API_URL}/api/translate`,
+        `${process.env.REACT_APP_API_URL}/api/translate`,
         {
           text,
           sourceLang: inputLang,
