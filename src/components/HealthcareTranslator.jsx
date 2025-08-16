@@ -15,7 +15,7 @@ export default function HealthcareTranslator() {
   const [showTranslated, setShowTranslated] = useState(false);
   const recRef = useRef(null);
 
-  // ✅ Updated translate function to call live backend
+  // ✅ Updated translate function for backend
   const translateNow = async (text) => {
     if (!text || !text.trim()) {
       setTranslated("");
@@ -25,11 +25,13 @@ export default function HealthcareTranslator() {
     try {
       setBusy(true);
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/translate`, // Use Vercel backend
+        `${process.env.REACT_APP_API_URL}/api/translate`,
         {
-          text,
-          sourceLang: inputLang,
-          targetLang: outputLang,
+          text,            // required field for backend
+          targetLang: outputLang, // required field for backend
+        },
+        {
+          headers: { "Content-Type": "application/json" }, // ensure JSON body
         }
       );
       setTranslated(res.data.translatedText || "");
