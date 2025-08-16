@@ -1,11 +1,18 @@
 // src/services/api.js
-export async function translateText(text, sourceLang = "en", targetLang = "es") {
+export async function translateText(
+  text,
+  sourceLang = "en",
+  targetLang = "es"
+) {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/translate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, sourceLang, targetLang }),
-    });
+    const response = await fetch(
+      "https://your-backend.vercel.app/api/translate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, sourceLang, targetLang }),
+      }
+    );
 
     if (!response.ok) throw new Error("Translation API failed");
     const data = await response.json();

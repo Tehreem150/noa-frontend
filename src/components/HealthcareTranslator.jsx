@@ -24,7 +24,7 @@ export default function HealthcareTranslator() {
     try {
       setBusy(true);
       const res = await axios.post(
-        "https://noa-backend.vercel.app/api/translate",
+         `${process.env.REACT_APP_API_URL}/api/translate`,
         {
           text,
           sourceLang: inputLang,
