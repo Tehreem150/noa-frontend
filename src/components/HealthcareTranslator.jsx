@@ -24,21 +24,16 @@ export default function HealthcareTranslator() {
     }
     try {
       setBusy(true);
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/translate`,
-        {
-          text,            // required field for backend
-          targetLang: outputLang, // required field for backend
-        },
-        {
-          headers: { "Content-Type": "application/json" }, // ensure JSON body
-        }
-      );
+      const res = await axios.post("/api/translate", {
+        text,
+        sourceLang: inputLang,
+        targetLang: outputLang,
+      });
       setTranslated(res.data.translatedText || "");
       setShowTranslated(true);
     } catch (e) {
       console.error("translate error", e);
-      setTranslated("Error: Could not translate. Check backend URL.");
+      setTranslated("Error: Could not translate. Check backend API.");
       setShowTranslated(true);
     } finally {
       setBusy(false);
