@@ -15,6 +15,7 @@ export default function HealthcareTranslator() {
   const [showTranslated, setShowTranslated] = useState(false);
   const recRef = useRef(null);
 
+  // ✅ Updated translate function to call live backend
   const translateNow = async (text) => {
     if (!text || !text.trim()) {
       setTranslated("");
@@ -23,9 +24,8 @@ export default function HealthcareTranslator() {
     }
     try {
       setBusy(true);
-      // ✅ Use deployed Vercel backend URL
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/translate`,
+        `${process.env.REACT_APP_API_URL}/api/translate`, // Use Vercel backend
         {
           text,
           sourceLang: inputLang,
@@ -36,8 +36,8 @@ export default function HealthcareTranslator() {
       setShowTranslated(true);
     } catch (e) {
       console.error("translate error", e);
-      setTranslated("");
-      setShowTranslated(false);
+      setTranslated("Error: Could not translate. Check backend URL.");
+      setShowTranslated(true);
     } finally {
       setBusy(false);
     }
@@ -151,7 +151,7 @@ export default function HealthcareTranslator() {
           </button>
         </div>
 
-        {/* Dynamic block */}
+        {/* Translated / Original block */}
         {!showTranslated ? (
           <div className="border rounded-2xl p-4 bg-gray-50 shadow-sm">
             <div className="flex items-center justify-between mb-2">
@@ -160,8 +160,7 @@ export default function HealthcareTranslator() {
               </div>
             </div>
             <div className="min-h-[6rem] whitespace-pre-wrap text-gray-800">
-              {finalText}
-              <span className="opacity-60">{interimText}</span>
+              {finalText} <span className="opacity-60">{interimText}</span>
             </div>
             {finalText && (
               <div className="mt-3">
