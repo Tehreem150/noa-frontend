@@ -23,7 +23,7 @@ export default function HealthcareTranslator() {
     }
     try {
       setBusy(true);
-      const res = await axios.post("http://localhost:5000/api/translate", {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/translate`, {
         text,
         sourceLang: inputLang,
         targetLang: outputLang,
