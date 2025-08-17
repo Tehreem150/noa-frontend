@@ -1,22 +1,19 @@
-import axios from "axios";
 import Cors from "cors";
+import OpenAI from "openai";
 
-// Initialize CORS middleware
-const cors = Cors({
-  methods: ["POST", "OPTIONS"],
-  origin:
-    "https://noa-frontend-le7z1ki7c-tehreems-projects-4dd84686.vercel.app", // your frontend URL
-});
-
-// Helper to run middleware in Next.js API
+// CORS setup
+const cors = Cors({ methods: ["POST", "OPTIONS"], origin: "*" });
 function runMiddleware(req, res, fn) {
   return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) reject(result);
-      else resolve(result);
-    });
+    fn(req, res, (result) =>
+      result instanceof Error ? reject(result) : resolve(result)
+    );
   });
 }
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export default async function handler(req, res) {
   await runMiddleware(req, res, cors);
@@ -25,19 +22,23 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { text, targetLang } = req.body;
+  const { text, sourceLang = "en", targetLang } = req.body;
+
   if (!text || !targetLang) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
-    const response = await axios.post(
-      process.env.TRANSLATION_API_URL,
-      { text, targetLang },
-      { headers: { Authorization: `Bearer ${process.env.API_KEY}` } }
-    );
+    const prompt = `Translate the following text from ${sourceLang} to ${targetLang}. Keep medical terms accurate:\n\n"${text}"`;
 
-    res.status(200).json({ translatedText: response.data.translatedText });
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+    });
+
+    const translatedText = completion.choices[0].message.content.trim();
+    res.status(200).json({ translatedText });
   } catch (error) {
     console.error("Translation error:", error.message);
     res.status(500).json({ error: "Translation failed" });
